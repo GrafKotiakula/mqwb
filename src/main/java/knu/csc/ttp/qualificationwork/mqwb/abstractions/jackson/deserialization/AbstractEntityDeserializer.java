@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.support.Repositories;
 
@@ -56,15 +55,12 @@ public abstract class AbstractEntityDeserializer<E extends AbstractEntity> exten
     protected Level defaultLogLvl = Constants.defaultJsonDeserializationLogLvl;
     protected Repositories repositories;
 
-    @SuppressWarnings("unused")
     protected AbstractEntityDeserializer(ApplicationContext context, Class<E> clazz) {
         super(clazz);
         this.repositories = new Repositories(context);
         try{
             this.constructor = ReflectionUtils.getConstructor(clazz, Level.FATAL);
         } catch (InternalServerErrorException ex) {
-            // TODO
-            ((ConfigurableApplicationContext) context).close();
             logger.fatal("Fail to create {}", getClass().getSimpleName());
             throw ex;
         }
@@ -129,7 +125,7 @@ public abstract class AbstractEntityDeserializer<E extends AbstractEntity> exten
     public E deserialize(JsonParser jsonParser, DeserializationContext context, E entity) throws IOException {
         JsonNode root = jsonParser.getCodec().readTree(jsonParser);
         for(Setter s: setters){
-            Object value = findBasicExtractorForType(s.getParameterType()).extractProperty(root, s.getName());
+            Object value = findBasicExtractorForType(s.getParameterType()).extractProperty(root, s.getPropertyName());
             s.invoke(entity, value);
         }
         return entity;

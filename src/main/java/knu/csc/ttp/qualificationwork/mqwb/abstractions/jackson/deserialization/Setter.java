@@ -9,10 +9,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 public class Setter {
     protected static final Logger logger = LogManager.getLogger(Setter.class);
-    private String name;
+    private String propertyName;
     private boolean required;
     private Method method;
     private Class<?> parameterType;
@@ -20,10 +21,38 @@ public class Setter {
     public Setter(){}
 
     public Setter(Method method) {
-        this.name = ReflectionUtils.getJsonPropertyName(method);
-        this.required = method.getAnnotation(JsonProperty.class).required();
-        this.parameterType = method.getParameters()[0].getType();
+        this.parameterType = getParameterType(method);
+        this.required = isRequired(method);
+        this.propertyName = getPropertyName(method);
         this.method = method;
+    }
+
+    private String getPropertyName(Method method) {
+        return Optional.ofNullable(method.getAnnotation(JsonProperty.class))
+                .map(JsonProperty::value)
+                .filter(name -> !name.isBlank())
+                .orElseGet(() -> buildPropertyNameFromMethodName(method));
+    }
+
+    private String buildPropertyNameFromMethodName(Method method) {
+        String methodName = ReflectionUtils.getPropertyNameFromMethodName(method);
+
+        // add id suffix for entities
+        if( ReflectionUtils.isEntity(getParameterType(method)) ) {
+            methodName += "Id";
+        }
+
+        return methodName;
+    }
+
+    private boolean isRequired(Method method) {
+        return Optional.ofNullable(method.getAnnotation(JsonProperty.class))
+                .map(JsonProperty::required)
+                .orElse(true);
+    }
+
+    private Class<?> getParameterType(Method method) {
+        return method.getParameters()[0].getType();
     }
 
     public void invoke(AbstractEntity entity, Object value) {
@@ -34,12 +63,12 @@ public class Setter {
         }
     }
 
-    public String getName() {
-        return name;
+    public String getPropertyName() {
+        return propertyName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPropertyName(String propertyName) {
+        this.propertyName = propertyName;
     }
 
     public boolean isRequired() {

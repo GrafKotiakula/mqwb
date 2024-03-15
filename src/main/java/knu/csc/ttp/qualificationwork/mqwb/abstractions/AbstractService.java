@@ -4,7 +4,7 @@ import knu.csc.ttp.qualificationwork.mqwb.Constants;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.ReflectionUtils;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.NotFoundException;
-import knu.csc.ttp.qualificationwork.mqwb.user.User;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -129,6 +129,18 @@ public abstract class AbstractService <ENTITY extends AbstractEntity, REPO exten
 
     public void delete(ENTITY entity){
         delete(entity, defaultDeleteLogLvl);
+    }
+
+    public void deleteNullable(ENTITY entity, Level logLevel){
+        if(entity != null) {
+            delete(entity, logLevel);
+        } else {
+            logger.trace("null-deleting is ignored");
+        }
+    }
+
+    public void deleteNullable(ENTITY entity) {
+        deleteNullable(entity, defaultDeleteLogLvl);
     }
 
     public Sort getDefaultSort() {

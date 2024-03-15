@@ -1,4 +1,4 @@
-package knu.csc.ttp.qualificationwork.mqwb.user;
+package knu.csc.ttp.qualificationwork.mqwb.entities.user;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,9 +8,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public enum Role {
+    ADMIN(Authority.values()), // ADMIN has all authorities
     USER(Authority.CREATE, Authority.READ, Authority.UPDATE, Authority.DELETE),
-    MODERATOR(USER, Authority.CREATE_USER, Authority.UPDATE_USER),
-    ADMIN(Authority.values()); // ADMIN has all authorities
+    MODERATOR(USER,
+            Authority.CREATE_USER, Authority.UPDATE_USER,
+            Authority.MODIFY_COMPANY,
+            Authority.MODIFY_GAME);
 
     private final Set<GrantedAuthority> authorities;
 
@@ -36,7 +39,10 @@ public enum Role {
         CREATE_USER,
         UPDATE_USER,
         UPDATE_USER_PASSWORD,
-        DELETE_USER;
+        DELETE_USER,
+
+        MODIFY_COMPANY,
+        MODIFY_GAME;
 
         private final GrantedAuthority authority;
 

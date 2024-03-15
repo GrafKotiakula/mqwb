@@ -28,6 +28,7 @@ public class AbstractController {
         mapper = context.getBean(ObjectMapper.class);
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected UUID convertToUUID(String str, String parameter) {
         if(str == null) {
             return null;

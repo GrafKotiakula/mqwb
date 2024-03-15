@@ -55,11 +55,11 @@ public class BadRequestException extends RequestException {
     }
 
     public static BadRequestException unknownError() {
-        return unknownError(null, null);
+        return unknownError("Unknown error", null);
     }
 
     public static BadRequestException unknownError(Throwable cause) {
-        return unknownError(null, cause);
+        return unknownError("Unknown error", cause);
     }
 
     public static BadRequestException unknownError(String message) {

@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 public class LoggerUtils {
-    public static Integer INF_DEPTH = -1;
+    public static final Integer INF_DEPTH = -1;
 
     public static <T extends Throwable> T logException (Logger logger, Level lvl, T exception) {
         return logException(logger, lvl, exception, INF_DEPTH);

@@ -1,5 +1,6 @@
 package knu.csc.ttp.qualificationwork.mqwb.abstractions.jackson.serialization;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.ReflectionUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractEntity;
@@ -21,12 +22,19 @@ public class Getter {
 
     public Getter(Method method) {
         this.method = method;
-        this.name = ReflectionUtils.getJsonPropertyName(method);
+        this.name = getPropertyName(method);
         this.type = method.getReturnType();
         if(ReflectionUtils.isEntity(type)){
             this.entitySerializeType = Optional.ofNullable(method.getAnnotation(JsonEntity.class))
                     .map(JsonEntity::value).orElse(AbstractEntitySerializer.defaultEntitySerializeType);
         }
+    }
+
+    private String getPropertyName(Method method) {
+        return Optional.ofNullable(method.getAnnotation(JsonProperty.class))
+                .map(JsonProperty::value)
+                .filter(name -> !name.isBlank())
+                .orElseGet(() -> ReflectionUtils.getPropertyNameFromMethodName(method));
     }
 
     public Object invoke(AbstractEntity entity) {

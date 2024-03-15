@@ -136,4 +136,18 @@ public class UnprocessableEntityException extends RequestException {
                 String.format("%s must contain digits, uppercased and lowercased latin letters", parameter),
                 String.format("%s.%s is in the wrong format", clazz.getSimpleName(), parameter), null);
     }
+
+    public static UnprocessableEntityException notPrettyLine(Class<? extends AbstractEntity> clazz,
+                                                             String parameter) {
+        return new UnprocessableEntityException(11,
+                String.format("%s must be a single line that neither starts nor ends with whitespaces", parameter),
+                String.format("%s.%s is in the wrong format", clazz.getSimpleName(), parameter), null);
+    }
+
+    public static UnprocessableEntityException fileIsNotAnImage(String parameter, Throwable cause) {
+        return new UnprocessableEntityException(12,
+                String.format("%s must be a valid image", parameter),
+                String.format("%s is not a valid image", parameter),
+                cause);
+    }
 }

@@ -1,7 +1,7 @@
-package knu.csc.ttp.qualificationwork.mqwb.user.jpa;
+package knu.csc.ttp.qualificationwork.mqwb.entities.user.jpa;
 
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractService;
-import knu.csc.ttp.qualificationwork.mqwb.user.User;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
 import org.apache.logging.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

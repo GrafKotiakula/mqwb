@@ -1,6 +1,6 @@
-package knu.csc.ttp.qualificationwork.mqwb.user.jpa;
+package knu.csc.ttp.qualificationwork.mqwb.entities.user.jpa;
 
-import knu.csc.ttp.qualificationwork.mqwb.user.User;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package knu.csc.ttp.qualificationwork.mqwb.user;
+package knu.csc.ttp.qualificationwork.mqwb.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractEntity;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.validation.ValidationGroup;
-import knu.csc.ttp.qualificationwork.mqwb.user.jackson.UserDeserializer;
-import knu.csc.ttp.qualificationwork.mqwb.user.jackson.UserSerializer;
+import knu.csc.ttp.qualificationwork.mqwb.entities.image.Image;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.jackson.UserDeserializer;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.jackson.UserSerializer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -36,6 +37,7 @@ public class User extends AbstractEntity implements UserDetails {
     @Column(name = "status", nullable = false)
     private Status status = Status.ENABLED;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role = Role.USER;
 
@@ -47,6 +49,10 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Column(name = "credentials_expiration")
     private ZonedDateTime credentialsExpiration;
+
+    @ManyToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     @Override
     @JsonProperty
@@ -109,6 +115,15 @@ public class User extends AbstractEntity implements UserDetails {
 
     public void setCredentialsExpiration(ZonedDateTime credentialsExpiration) {
         this.credentialsExpiration = credentialsExpiration;
+    }
+
+    @JsonProperty
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     @Override

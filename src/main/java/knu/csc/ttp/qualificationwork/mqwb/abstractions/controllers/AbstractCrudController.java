@@ -2,14 +2,14 @@ package knu.csc.ttp.qualificationwork.mqwb.abstractions.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
-import knu.csc.ttp.qualificationwork.mqwb.ReflectionUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractEntity;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractService;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.validation.AbstractEntityValidator;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.Role;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.BadRequestException;
-import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
-import knu.csc.ttp.qualificationwork.mqwb.user.Role;
+import org.apache.logging.log4j.Level;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,19 +18,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public abstract class AbstractCrudController<ENTITY extends AbstractEntity,
         SERVICE extends AbstractService<ENTITY, ? extends JpaRepository<ENTITY, UUID>>,
         VALIDATOR extends AbstractEntityValidator<ENTITY>>
-        extends AbstractController {
-    private final IllegalStateException initIllegalState = new IllegalStateException("Superclass is not generic");
-
-    protected Class<ENTITY> entityClass;
-    protected SERVICE service;
-    protected VALIDATOR validator;
+        extends AbstractEntityController<ENTITY, SERVICE, VALIDATOR> {
 
     protected GrantedAuthority getAllAuthority = Role.Authority.READ.getAuthority();
     protected GrantedAuthority getByIdAuthority = Role.Authority.READ.getAuthority();
@@ -38,48 +32,12 @@ public abstract class AbstractCrudController<ENTITY extends AbstractEntity,
     protected GrantedAuthority updateAuthority = Role.Authority.UPDATE.getAuthority();
     protected GrantedAuthority deleteAuthority = Role.Authority.DELETE.getAuthority();
 
-
     public AbstractCrudController(ApplicationContext context) {
-        super(context);
-        entityClass = getEntityClass();
-        service = findService(context);
-        validator = findValidator(context);
-    }
-
-    @SuppressWarnings("unchecked")
-    private Class<ENTITY> getEntityClass() {
-        return Optional.ofNullable(ReflectionUtils.getTypeClassOfGenericClass(this,
-                        AbstractCrudController.class, null, 0))
-                .map(c -> (Class<ENTITY>)c)
-                .orElseThrow(() -> LoggerUtils.fatalException(logger, InternalServerErrorException
-                        .cannotGetGenericClassTypeParameter(getClass(), initIllegalState) ));
-    }
-
-    private <T> T findBean(ApplicationContext context, Class<T> nullableClazz) {
-        try {
-            return Optional.ofNullable(nullableClazz)
-                    .map(context::getBean)
-                    .orElseThrow(() -> initIllegalState);
-        } catch (ClassCastException | IllegalStateException ex) {
-            throw LoggerUtils.fatalException(logger, InternalServerErrorException
-                    .cannotGetGenericClassTypeParameter(getClass(), ex));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private SERVICE findService(ApplicationContext context) {
-        Class<SERVICE> serviceClass = (Class<SERVICE>) ReflectionUtils.getTypeClassOfGenericClass(this,
-                AbstractCrudController.class, null, 1);
-
-        return findBean(context, serviceClass);
-    }
-
-    @SuppressWarnings("unchecked")
-    private VALIDATOR findValidator(ApplicationContext context) {
-        Class<VALIDATOR> serviceClass = (Class<VALIDATOR>) ReflectionUtils.getTypeClassOfGenericClass(this,
-                AbstractCrudController.class, null, 2);
-
-        return findBean(context, serviceClass);
+        super(context, null, null, null);
+        this.entityClass = getEntityClass(this, AbstractCrudController.class, 0);
+        this.service = findService(context, this, AbstractCrudController.class, 1);
+        this.validator = findValidator(context, this, AbstractCrudController.class, 2);
+        logConstructedSuccessfully(Level.DEBUG);
     }
 
     public ENTITY parseEntityOnCreate(JsonNode json) {
@@ -110,16 +68,16 @@ public abstract class AbstractCrudController<ENTITY extends AbstractEntity,
     }
 
     @GetMapping("/all")
-    public List<ENTITY> getAll(@RequestParam(value = "page", required = false) Integer page) {
+    public Page<ENTITY> getAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         checkAuthority(getAllAuthority);
-        return Optional.ofNullable(page)
-                .map(p -> service.findAll(p).toList())
-                .orElse(service.findAll());
+        return service.findAll(page);
     }
 
     @GetMapping("/{id}")
-    public ENTITY getById(@PathVariable("id") UUID id) {
+    public ENTITY getById(@PathVariable("id") String strId) {
         checkAuthority(getByIdAuthority);
+        UUID id = convertToUUID(strId, "id");
+
         return service.findByIdOrThrow(id);
     }
 
@@ -138,8 +96,9 @@ public abstract class AbstractCrudController<ENTITY extends AbstractEntity,
     }
 
     @PutMapping("/{id}")
-    public ENTITY updateById(@PathVariable("id") UUID id, @RequestBody JsonNode json) {
+    public ENTITY updateById(@PathVariable("id") String strId, @RequestBody JsonNode json) {
         checkAuthority(updateAuthority);
+        UUID id = convertToUUID(strId, "id");
 
         ENTITY entity = service.findByIdOrThrow(id);
 
@@ -151,27 +110,12 @@ public abstract class AbstractCrudController<ENTITY extends AbstractEntity,
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable("id") UUID id) {
+    public ResponseEntity<Void> deleteById(@PathVariable("id") String strId) {
         checkAuthority(deleteAuthority);
+        UUID id = convertToUUID(strId, "id");
 
         service.findById(id).ifPresent(service::delete);
         return ResponseEntity.noContent().build();
-    }
-
-    public SERVICE getService() {
-        return service;
-    }
-
-    public void setService(SERVICE service) {
-        this.service = service;
-    }
-
-    public VALIDATOR getValidator() {
-        return validator;
-    }
-
-    public void setValidator(VALIDATOR validator) {
-        this.validator = validator;
     }
 
     public GrantedAuthority getGetAllAuthority() {

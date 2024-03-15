@@ -19,6 +19,7 @@ public class Constants {
     public static final Integer notFoundBaseCode = 1300;
     public static final Integer unprocessableEntityBaseCode = 1400;
     public static final Integer methodNotAllowedBaseCode = 1500;
+    public static final Integer insufficientStorageBaseCode = 1800;
     public static final Integer internalServerErrorBaseCode = 1900;
 
     public static final Level defaultCreateLogLvl = Level.INFO;
@@ -29,4 +30,7 @@ public class Constants {
     public static final Level defaultControllerLogLvl = Level.DEBUG;
 
     public static final int pageSize = 20;
+
+    public static final String prettyLineRegexp = "^\\S[^\r\n]*\\S"; // used for @Pattern.regexp
+    public static final String prettyLineMessage = "notPrettyLine";  // used for @Pattern.message
 }

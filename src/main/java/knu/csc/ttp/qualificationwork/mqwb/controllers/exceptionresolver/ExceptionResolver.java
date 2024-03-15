@@ -6,6 +6,7 @@ import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.controllers.AbstractController;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.RequestException;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.*;
+import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InsufficientStorageException;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -94,6 +95,12 @@ public class ExceptionResolver extends AbstractController {
     @ExceptionHandler(InternalServerErrorException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public FailureDto internalServerErrorExceptionHandler(InternalServerErrorException ex){
+        return new FailureDto(ex);
+    }
+
+    @ExceptionHandler(InsufficientStorageException.class)
+    @ResponseStatus(HttpStatus.INSUFFICIENT_STORAGE)
+    public FailureDto insufficientStorageExceptionHandler(InsufficientStorageException ex){
         return new FailureDto(ex);
     }
 }

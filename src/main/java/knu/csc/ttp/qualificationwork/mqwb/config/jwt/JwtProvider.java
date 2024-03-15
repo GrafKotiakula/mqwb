@@ -8,8 +8,8 @@ import io.jsonwebtoken.security.WeakKeyException;
 import jakarta.servlet.http.HttpServletRequest;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
-import knu.csc.ttp.qualificationwork.mqwb.user.User;
-import knu.csc.ttp.qualificationwork.mqwb.user.jpa.UserService;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.jpa.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,18 +70,6 @@ public class JwtProvider  {
         return BEARER_TOKEN_PREFIX + token;
     }
 
-//    public String createToken(UUID id, Date enabled, Date expired){
-//        Claims claims = Jwts.claims().setSubject(id.toString());
-//        String token = Jwts.builder()
-//                .setClaims(claims)
-//                .setIssuedAt(new Date())
-//                .setNotBefore(enabled)
-//                .setExpiration(expired)
-//                .signWith(secretKey)
-//                .compact();
-//        return BEARER_TOKEN_PREFIX + token;
-//    }
-
     private UUID extractId(String bearerToken) throws JwtException {
         if(bearerToken == null){
             throw new JwtException("token is not provided");
@@ -98,23 +86,6 @@ public class JwtProvider  {
             throw new MalformedJwtException("Cannot extract uuid", ex);
         }
     }
-
-//    private UUID extractId(String bearerToken) throws JwtException {
-//        if(bearerToken == null){
-//            throw new JwtException("token is not provided");
-//        }
-//        if(!bearerToken.startsWith(BEARER_TOKEN_PREFIX)){
-//            throw new MalformedJwtException("token is not recognized");
-//        }
-//        String token = bearerToken.substring(BEARER_TOKEN_PREFIX.length());
-//
-//        try {
-//            return UUID.fromString(Jwts.parserBuilder().setSigningKey(secretKey).build()
-//                    .parseClaimsJws(token).getBody().getSubject());
-//        } catch (IllegalArgumentException ex) {
-//            throw new MalformedJwtException("Cannot extract uuid", ex);
-//        }
-//    }
 
     public Authentication getAuthentication(HttpServletRequest request) throws JwtException{
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);

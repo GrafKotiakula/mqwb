@@ -1,6 +1,5 @@
 package knu.csc.ttp.qualificationwork.mqwb;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractEntity;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
 import org.apache.logging.log4j.Level;
@@ -15,6 +14,7 @@ import java.util.Optional;
 
 public class ReflectionUtils {
     private static final Logger logger = LogManager.getLogger(ReflectionUtils.class);
+
     @SuppressWarnings("unchecked")
     public static <B, T extends B, G> Class<? extends B> getTypeClassOfGenericClass(G curImpl, Class<G> genericClass,
                                                                                     Class<B> defaultVal,
@@ -33,14 +33,9 @@ public class ReflectionUtils {
         return getTypeClassOfGenericClass(curImpl, genericClass, defaultVal, 0);
     }
 
-    public static String getJsonPropertyName(Method method) {
-        if(method.isAnnotationPresent(JsonProperty.class)) {
-            String annotationValue = method.getAnnotation(JsonProperty.class).value();
-            if (!annotationValue.isEmpty()) {
-                return annotationValue;
-            }
-        }
+    public static String getPropertyNameFromMethodName(Method method) {
         String methodName = method.getName();
+
         // remove standard prefixes
         for(String prefix: Arrays.asList("set", "get", "is")) {
             int prefixLength = prefix.length();
@@ -50,6 +45,7 @@ public class ReflectionUtils {
                 break;
             }
         }
+
         return methodName;
     }
 

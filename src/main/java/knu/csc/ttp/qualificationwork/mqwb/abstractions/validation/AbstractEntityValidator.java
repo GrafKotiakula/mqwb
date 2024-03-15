@@ -198,6 +198,14 @@ public abstract class AbstractEntityValidator<E extends AbstractEntity> {
                 .forEach(f -> validateFiled(entity, f));
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    protected void validateUniqueness(E entity, Optional<E> foundCopy, Level logLvl, String filedName) {
+        foundCopy.filter( e -> !e.getId().equals(entity.getId()) ).ifPresent(e -> {
+            throw LoggerUtils.logException(logger, logLvl,
+                    UnprocessableEntityException.duplicatedField(clazz, filedName));
+        });
+    }
+
     public Level getDefaultLogLvl() {
         return defaultLogLvl;
     }

@@ -1,9 +1,7 @@
-package knu.csc.ttp.qualificationwork.mqwb.user;
+package knu.csc.ttp.qualificationwork.mqwb.entities.user;
 
-import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.validation.AbstractEntityValidator;
-import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.UnprocessableEntityException;
-import knu.csc.ttp.qualificationwork.mqwb.user.jpa.UserService;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.jpa.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -19,18 +17,11 @@ public class UserValidator extends AbstractEntityValidator<User> {
         service = context.getBean(UserService.class);
     }
 
-    protected void validateUsernameUniqueness(User user) {
-        service.findByUsername(user.getUsername()).filter( u -> !u.getId().equals(user.getId()) ).ifPresent(u -> {
-            throw LoggerUtils.logException(logger, defaultLogLvl,
-                    UnprocessableEntityException.duplicatedField(User.class, USERNAME_FIELD_NAME));
-        });
-    }
-
     @Override
     public void validate(User user, String validationGroup) {
         super.validate(user, validationGroup);
         if(validationGroup == null || validationGroup.equals(CREATE) || validationGroup.equals(UPDATE)) {
-            validateUsernameUniqueness(user);
+            validateUniqueness(user, service.findByUsername(user.getUsername()), defaultLogLvl, USERNAME_FIELD_NAME);
         }
     }
 }

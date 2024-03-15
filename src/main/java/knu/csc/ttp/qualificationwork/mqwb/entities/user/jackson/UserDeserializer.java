@@ -1,8 +1,8 @@
-package knu.csc.ttp.qualificationwork.mqwb.user.jackson;
+package knu.csc.ttp.qualificationwork.mqwb.entities.user.jackson;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.jackson.deserialization.AbstractEntityDeserializer;
-import knu.csc.ttp.qualificationwork.mqwb.user.User;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
