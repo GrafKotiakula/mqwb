@@ -10,7 +10,6 @@ import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.BadRequestException;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.UnprocessableEntityException;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.*;
@@ -25,7 +24,7 @@ public abstract class AbstractEntityValidator<E extends AbstractEntity> {
     public static final String CREATE = "CREATE";
     public static final String UPDATE = "UPDATE";
 
-    protected final Logger logger = LogManager.getLogger(getClass());
+    protected final Logger logger = LoggerUtils.getNamedLogger(Constants.validatorLoggerName, getClass());
     protected final Class<E> clazz;
     protected final List<Field> fields;
     protected final List<BiConsumer<Object, Field>> validators;
@@ -90,7 +89,8 @@ public abstract class AbstractEntityValidator<E extends AbstractEntity> {
             if( (value instanceof Long && max.value() < (Long) value)
                     || (value instanceof Integer && max.value() < (Integer) value)
                     || (value instanceof Double && max.value() < (Double) value)
-                    || (value instanceof Float && max.value() < (Float) value) ){
+                    || (value instanceof Float && max.value() < (Float) value)
+                    || (value instanceof BigDecimal && new BigDecimal(max.value()).compareTo((BigDecimal) value) < 0)){
                 throw LoggerUtils.logException(logger, defaultLogLvl,
                         UnprocessableEntityException.valueTooBig(clazz, field.getName(), max.value()) );
             }
@@ -104,7 +104,8 @@ public abstract class AbstractEntityValidator<E extends AbstractEntity> {
             if( (value instanceof Long && min.value() > (Long) value)
                     || (value instanceof Integer && min.value() > (Integer) value)
                     || (value instanceof Double && min.value() > (Double) value)
-                    || (value instanceof Float && min.value() > (Float) value) ){
+                    || (value instanceof Float && min.value() > (Float) value)
+                    || (value instanceof BigDecimal && new BigDecimal(min.value()).compareTo((BigDecimal) value) > 0)){
                 throw LoggerUtils.logException(logger, defaultLogLvl,
                         UnprocessableEntityException.valueTooSmall(clazz, field.getName(), min.value()) );
             }

@@ -22,6 +22,13 @@ public class Constants {
     public static final Integer insufficientStorageBaseCode = 1800;
     public static final Integer internalServerErrorBaseCode = 1900;
 
+    public static final String projectRootPackage = "knu.csc.ttp.qualificationwork.mqwb";
+    public static final String serviceLoggerName = "SERVICE";
+    public static final String controllerLoggerName = "CONTROLLER";
+    public static final String serializerLoggerName = "SERIALIZER";
+    public static final String deserializerLoggerName = "DESERIALIZER";
+    public static final String validatorLoggerName = "VALIDATOR";
+
     public static final Level defaultCreateLogLvl = Level.INFO;
     public static final Level defaultUpdateLogLvl = Level.INFO;
     public static final Level defaultDeleteLogLvl = Level.INFO;

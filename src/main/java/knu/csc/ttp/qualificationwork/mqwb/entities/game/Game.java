@@ -1,23 +1,18 @@
 package knu.csc.ttp.qualificationwork.mqwb.entities.game;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import knu.csc.ttp.qualificationwork.mqwb.Constants;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractEntity;
 import knu.csc.ttp.qualificationwork.mqwb.entities.company.Company;
-import knu.csc.ttp.qualificationwork.mqwb.entities.game.jackson.GameDeserializer;
-import knu.csc.ttp.qualificationwork.mqwb.entities.game.jackson.GameSerializer;
 import knu.csc.ttp.qualificationwork.mqwb.entities.image.Image;
+import knu.csc.ttp.qualificationwork.mqwb.entities.rating.Rating;
 
 import javax.validation.constraints.Pattern;
 import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "games")
-@JsonSerialize(using = GameSerializer.class)
-@JsonDeserialize(using = GameDeserializer.class)
 public class Game extends AbstractEntity {
     @Column(name = "name", length = 50, nullable = false, unique = true)
     @Pattern(regexp = Constants.prettyLineRegexp, message = Constants.prettyLineMessage)
@@ -37,6 +32,10 @@ public class Game extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "image_id")
     private Image image;
+
+    @ManyToOne
+    @JoinColumn(name = "avg_rating_id", nullable = false)
+    private Rating avgRating;
 
     @JsonProperty
     public String getName() {
@@ -85,5 +84,14 @@ public class Game extends AbstractEntity {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    @JsonProperty
+    public Rating getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(Rating avgRating) {
+        this.avgRating = avgRating;
     }
 }

@@ -13,7 +13,6 @@ import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.BadRequestException;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.NotFoundException;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +20,7 @@ import org.springframework.data.repository.support.Repositories;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -31,7 +31,8 @@ import java.util.stream.Stream;
 public abstract class AbstractEntityDeserializer<E extends AbstractEntity> extends StdDeserializer<E> {
     protected static Map<Class<?>, JsonValueExtractor<?>> extractors;
     protected static JsonValueExtractor<UUID> uuidExtractor;
-    private static final Logger staticLogger = LogManager.getLogger(AbstractEntityDeserializer.class);
+    private static final Logger staticLogger = LoggerUtils
+            .getNamedLogger(Constants.deserializerLoggerName, AbstractEntityDeserializer.class);
     static {
         uuidExtractor = new JsonValueExtractor<>(UUID.class, "id", "string[uuid]",
                 JsonNode::isTextual, AbstractEntityDeserializer::extractUUID);
@@ -42,15 +43,17 @@ public abstract class AbstractEntityDeserializer<E extends AbstractEntity> exten
                         (node, name) -> node.intValue()),
                 new JsonValueExtractor<>(Boolean.class,"bool","bool",JsonNode::isBoolean,
                         (node, name) -> node.booleanValue()),
+                new JsonValueExtractor<>(BigDecimal.class,"decimal","decimal",JsonNode::isDouble,
+                        (node, name) -> node.decimalValue()),
                 new JsonValueExtractor<>(ZonedDateTime.class,"timestamp",String.format("string[%s]",
                         Constants.dateTimeFormat), JsonNode::isTextual, AbstractEntityDeserializer::extractZonedDateTime),
                 uuidExtractor
         ).collect( Collectors.toMap(JsonValueExtractor::getClazz, Function.identity()) );
     }
 
-    protected final Logger logger = LogManager.getLogger(getClass());
+    protected final Logger logger = LoggerUtils.getNamedLogger(Constants.deserializerLoggerName, getClass());
+    protected final List<Setter> setters;
     private final Constructor<E> constructor;
-    private final List<Setter> setters;
 
     protected Level defaultLogLvl = Constants.defaultJsonDeserializationLogLvl;
     protected Repositories repositories;
@@ -115,6 +118,14 @@ public abstract class AbstractEntityDeserializer<E extends AbstractEntity> exten
         return ReflectionUtils.buildObject(constructor, Level.ERROR);
     }
 
+    public E deserialize(JsonNode root, E entity) {
+        for(Setter s: setters){
+            Object value = findBasicExtractorForType(s.getParameterType()).extractProperty(root, s.getPropertyName());
+            s.invoke(entity, value);
+        }
+        return entity;
+    }
+
     @Override
     public E deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
         E entity = newEntity();
@@ -124,11 +135,7 @@ public abstract class AbstractEntityDeserializer<E extends AbstractEntity> exten
     @Override
     public E deserialize(JsonParser jsonParser, DeserializationContext context, E entity) throws IOException {
         JsonNode root = jsonParser.getCodec().readTree(jsonParser);
-        for(Setter s: setters){
-            Object value = findBasicExtractorForType(s.getParameterType()).extractProperty(root, s.getPropertyName());
-            s.invoke(entity, value);
-        }
-        return entity;
+        return deserialize(root, entity);
     }
 
     private List<Setter> extractAnnotatedSetters(Class<?> clazz) {

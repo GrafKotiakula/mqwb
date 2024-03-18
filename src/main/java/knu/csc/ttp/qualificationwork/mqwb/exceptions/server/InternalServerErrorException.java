@@ -7,6 +7,7 @@ import knu.csc.ttp.qualificationwork.mqwb.exceptions.RequestException;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 public class InternalServerErrorException extends RequestException {
@@ -76,5 +77,9 @@ public class InternalServerErrorException extends RequestException {
 
     public static InternalServerErrorException tooWeakKey(Throwable cause) {
         return new InternalServerErrorException("Jwt key is too weak", cause);
+    }
+
+    public static InternalServerErrorException sqlException(SQLException cause) {
+        return new InternalServerErrorException("SQL exception occurs", cause);
     }
 }

@@ -1,5 +1,6 @@
 package knu.csc.ttp.qualificationwork.mqwb.entities.image.jpa;
 
+import knu.csc.ttp.qualificationwork.mqwb.AuthUtils;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractService;
 import knu.csc.ttp.qualificationwork.mqwb.entities.image.Image;
@@ -68,7 +69,7 @@ public class ImageService extends AbstractService<Image, ImageRepository> {
                     InsufficientStorageException.cannotSaveFile(ex));
         }
         logger.log(Optional.ofNullable(logLevel).orElse(defaultCreateLogLvl),
-                "{} is created by {}", image, getAuthenticatedUser().orElseGet(User::new));
+                "{} is created by {}", image, AuthUtils.getAuthenticatedUser().orElseGet(User::new));
         return image;
     }
 

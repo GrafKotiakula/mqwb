@@ -1,24 +1,25 @@
 package knu.csc.ttp.qualificationwork.mqwb.config;
 
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import knu.csc.ttp.qualificationwork.mqwb.config.jackson.PageSerializer;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.jackson.JsonComponentModule;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 
 @Configuration
 public class JacksonConfiguration {
-
-    protected Module buildPageModule() {
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(Page.class, new PageSerializer());
-        return module;
-    }
-
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
-        return builder -> builder.modules(buildPageModule());
+    public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer(ApplicationContext context) {
+        return builder -> builder
+                .serializerByType(Page.class, context.getBean(PageSerializer.class))
+                .modulesToInstall(context.getBean(JsonComponentModule.class))
+                .featuresToDisable(
+                        SerializationFeature.WRAP_EXCEPTIONS,
+                        DeserializationFeature.WRAP_EXCEPTIONS
+                );
     }
 }

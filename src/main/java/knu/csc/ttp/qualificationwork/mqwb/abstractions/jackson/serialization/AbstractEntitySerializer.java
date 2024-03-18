@@ -8,7 +8,6 @@ import knu.csc.ttp.qualificationwork.mqwb.Constants;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractEntity;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ public abstract class AbstractEntitySerializer <E extends AbstractEntity> extend
         defaultEntitySerializeType = tmp;
     }
 
-    protected final Logger logger = LogManager.getLogger(getClass());
+    protected final Logger logger = LoggerUtils.getNamedLogger(Constants.serializerLoggerName, getClass());
 
     public AbstractEntitySerializer(Class<E> clazz) {
         super(clazz);

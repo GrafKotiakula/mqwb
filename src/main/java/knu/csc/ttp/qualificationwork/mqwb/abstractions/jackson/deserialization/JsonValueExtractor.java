@@ -1,9 +1,9 @@
 package knu.csc.ttp.qualificationwork.mqwb.abstractions.jackson.deserialization;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import knu.csc.ttp.qualificationwork.mqwb.Constants;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.BadRequestException;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 public class JsonValueExtractor<T> {
-    private final Logger logger = LogManager.getLogger(getClass());
+    private final Logger logger = LoggerUtils.getNamedLogger(Constants.deserializerLoggerName, getClass());
     private final Class<T> clazz;
     private final String jsonTypeName;
     private final String defaultName;

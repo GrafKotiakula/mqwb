@@ -1,6 +1,7 @@
 package knu.csc.ttp.qualificationwork.mqwb;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LoggerUtils {
@@ -53,5 +54,14 @@ public class LoggerUtils {
 
     public static <T extends Throwable> T traceException (Logger logger, T exception) {
         return logException(logger, Level.TRACE, exception, INF_DEPTH);
+    }
+
+    public static Logger getNamedLogger(String name, Class<?> clazz) {
+        StringBuilder nameBuilder = new StringBuilder(Constants.projectRootPackage)
+                .append('.').append(name)
+                .append('.').append(clazz.getSimpleName());
+
+        return LogManager.getLogger(nameBuilder.toString());
+
     }
 }

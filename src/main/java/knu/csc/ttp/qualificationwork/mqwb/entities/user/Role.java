@@ -13,7 +13,8 @@ public enum Role {
     MODERATOR(USER,
             Authority.CREATE_USER, Authority.UPDATE_USER,
             Authority.MODIFY_COMPANY,
-            Authority.MODIFY_GAME);
+            Authority.MODIFY_GAME,
+            Authority.DELETE_REVIEW);
 
     private final Set<GrantedAuthority> authorities;
 
@@ -42,7 +43,10 @@ public enum Role {
         DELETE_USER,
 
         MODIFY_COMPANY,
-        MODIFY_GAME;
+        MODIFY_GAME,
+
+        DELETE_REVIEW,
+        UPDATE_REVIEW;
 
         private final GrantedAuthority authority;
 

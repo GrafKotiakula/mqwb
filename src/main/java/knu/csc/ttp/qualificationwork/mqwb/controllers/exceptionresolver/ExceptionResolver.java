@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.sql.SQLException;
+
 @RestControllerAdvice()
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RequestMapping("/api/v1")
@@ -61,6 +63,14 @@ public class ExceptionResolver extends AbstractController {
     public FailureDto noHandlerFound(NoHandlerFoundException ex, HttpServletRequest request){
         RequestException requestException = NotFoundException.handlerNotFoundException(request, ex);
         LoggerUtils.logException(logger, defaultLogLvl, requestException);
+        return new FailureDto(requestException);
+    }
+
+    @ExceptionHandler(SQLException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public FailureDto sqlException(SQLException ex) {
+        RequestException requestException = InternalServerErrorException.sqlException(ex);
+        LoggerUtils.errorException(logger, requestException);
         return new FailureDto(requestException);
     }
 

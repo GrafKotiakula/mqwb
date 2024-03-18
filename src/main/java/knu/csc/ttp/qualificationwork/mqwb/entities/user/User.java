@@ -1,14 +1,10 @@
 package knu.csc.ttp.qualificationwork.mqwb.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractEntity;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.validation.ValidationGroup;
 import knu.csc.ttp.qualificationwork.mqwb.entities.image.Image;
-import knu.csc.ttp.qualificationwork.mqwb.entities.user.jackson.UserDeserializer;
-import knu.csc.ttp.qualificationwork.mqwb.entities.user.jackson.UserSerializer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,8 +17,6 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "users")
-@JsonSerialize(using = UserSerializer.class)
-@JsonDeserialize(using = UserDeserializer.class)
 public class User extends AbstractEntity implements UserDetails {
     @Column(name = "username", length = 50, nullable = false, unique = true)
     @NotBlank @Pattern(regexp = "^[a-zA-Z0-9-_.]*$", message = "wrongUsernameFormat")

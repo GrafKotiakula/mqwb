@@ -1,18 +1,18 @@
 package knu.csc.ttp.qualificationwork.mqwb.abstractions.jackson.serialization;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import knu.csc.ttp.qualificationwork.mqwb.Constants;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.ReflectionUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractEntity;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
 
 public class Getter {
-    private final Logger logger = LogManager.getLogger(getClass());
+    private final Logger logger = LoggerUtils.getNamedLogger(Constants.serializerLoggerName, getClass());
     private Method method;
     private String name;
     private Class<?> type;
@@ -41,6 +41,8 @@ public class Getter {
         try {
             return method.invoke(entity);
         } catch (Exception ex) {
+            System.out.println(method.getDeclaringClass().getName());
+            System.out.println(entity.getClass().getName());
             throw LoggerUtils.errorException(logger, InternalServerErrorException.cannotAccessExecutable(method, ex));
         }
     }

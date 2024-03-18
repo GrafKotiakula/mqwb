@@ -6,7 +6,6 @@ import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.BadRequestException;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.ForbiddenException;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
@@ -19,7 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class AbstractController {
-    protected final Logger logger = LogManager.getLogger(getClass());
+    protected final Logger logger = LoggerUtils.getNamedLogger(Constants.controllerLoggerName, getClass());
 
     protected ObjectMapper mapper;
     protected Level defaultLogLvl = Constants.defaultControllerLogLvl;

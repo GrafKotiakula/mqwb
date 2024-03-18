@@ -1,27 +1,25 @@
 package knu.csc.ttp.qualificationwork.mqwb.abstractions;
 
+import knu.csc.ttp.qualificationwork.mqwb.AuthUtils;
 import knu.csc.ttp.qualificationwork.mqwb.Constants;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.ReflectionUtils;
-import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.NotFoundException;
 import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
+import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.NotFoundException;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public abstract class AbstractService <ENTITY extends AbstractEntity, REPO extends JpaRepository<ENTITY, UUID>> {
-    protected final Logger logger = LogManager.getLogger(getClass());
+    protected final Logger logger = LoggerUtils.getNamedLogger(Constants.serviceLoggerName, getClass());
     protected final REPO repository;
     protected final Class<? extends AbstractEntity> entityClass;
 
@@ -81,8 +79,7 @@ public abstract class AbstractService <ENTITY extends AbstractEntity, REPO exten
 
     public ENTITY create(ENTITY entity, Level logLevel) {
         entity = repository.saveAndFlush(entity);
-        logger.log(Optional.ofNullable(logLevel).orElse(defaultCreateLogLvl),
-                "{} is created by {}", entity, getAuthenticatedUser().orElseGet(User::new));
+        logger.log(logLevel, "{} is created by {}", entity, AuthUtils.getAuthenticatedUser().orElseGet(User::new));
         return entity;
     }
 
@@ -92,20 +89,12 @@ public abstract class AbstractService <ENTITY extends AbstractEntity, REPO exten
 
     public ENTITY update(ENTITY entity, Level logLevel) {
         entity = repository.saveAndFlush(entity);
-        logger.log(Optional.ofNullable(logLevel).orElse(defaultUpdateLogLvl),
-                "{} is updated by {}", entity, getAuthenticatedUser().orElseGet(User::new));
+        logger.log(logLevel, "{} is updated by {}", entity, AuthUtils.getAuthenticatedUser().orElseGet(User::new));
         return entity;
     }
 
     public ENTITY update(ENTITY entity) {
         return update(entity, defaultUpdateLogLvl);
-    }
-
-    protected Optional<User> getAuthenticatedUser() {
-        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .map(Authentication::getPrincipal)
-                .filter(principal -> principal instanceof User)
-                .map(principal -> (User) principal);
     }
 
     public ENTITY save(ENTITY entity){
@@ -123,8 +112,7 @@ public abstract class AbstractService <ENTITY extends AbstractEntity, REPO exten
     public void delete(ENTITY entity, Level logLevel){
         repository.delete(entity);
         repository.flush();
-        logger.log(Optional.ofNullable(logLevel).orElse(defaultDeleteLogLvl),
-                "{} is deleted by {}", entity, getAuthenticatedUser().orElseGet(User::new));
+        logger.log(logLevel, "{} is deleted by {}", entity, AuthUtils.getAuthenticatedUser().orElseGet(User::new));
     }
 
     public void delete(ENTITY entity){
