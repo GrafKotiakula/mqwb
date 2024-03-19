@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController extends AbstractCrudController<User, UserService, UserValidator> {
     protected ImageController imageController;
 
+    protected GrantedAuthority readByAuthAuthority = Role.Authority.READ.getAuthority();
     protected GrantedAuthority updateByIdAuthority = Role.Authority.UPDATE_USER.getAuthority();
     protected GrantedAuthority updatePasswordByIdAuthority = Role.Authority.UPDATE_USER_PASSWORD.getAuthority();
 
@@ -69,11 +70,13 @@ public class UserController extends AbstractCrudController<User, UserService, Us
 
     @GetMapping
     public User getByAuth(@AuthenticationPrincipal User user) {
+        checkAuthority(readByAuthAuthority); // in case anonymous user
         return user;
     }
 
     @PutMapping
     public User updateByAuth(@AuthenticationPrincipal User user, @RequestBody JsonNode json) {
+        checkAuthority(updateAuthority); // in case anonymous user
         return update(user, json);
     }
 
@@ -90,6 +93,7 @@ public class UserController extends AbstractCrudController<User, UserService, Us
 
     @PutMapping("/password")
     public User updatePasswordByAuth(@AuthenticationPrincipal User user, @RequestBody JsonNode json) {
+        checkAuthority(updateAuthority); // in case anonymous user
         return updatePassword(user, json);
     }
 
@@ -103,7 +107,7 @@ public class UserController extends AbstractCrudController<User, UserService, Us
 
     @PutMapping("/image")
     public User updateImageByAuth(@AuthenticationPrincipal User user, @RequestParam("image") MultipartFile file) {
-        checkAuthority(updateAuthority);
+        checkAuthority(updateAuthority); // in case anonymous user
         return updateImage(user, file, "image");
     }
 
@@ -117,7 +121,7 @@ public class UserController extends AbstractCrudController<User, UserService, Us
 
     @DeleteMapping("/image")
     public ResponseEntity<Void> removeImageByAuth(@AuthenticationPrincipal User user) {
-        checkAuthority(updateAuthority);
+        checkAuthority(updateAuthority); // in case anonymous user
 
         removeImage(user);
 

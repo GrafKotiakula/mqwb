@@ -8,8 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Optional;
 
 public class ForbiddenException extends RequestException {
-    protected ForbiddenException(Integer code, String clientMessage, String message, Throwable cause) {
-        super(code, clientMessage, message, cause);
+    protected ForbiddenException(String message, Throwable cause) {
+        super(0, "Access denied", message, cause);
     }
 
     @Override
@@ -26,8 +26,11 @@ public class ForbiddenException extends RequestException {
                 .map(Authentication::getPrincipal)
                 .map(Object::toString)
                 .orElse(String.format("UNKNOWN_USER[Authentication=%s]", auth));
-        return new ForbiddenException(0, "Access forbidden",
-                String.format("%s has no required authority %s", userDescription, authority),
+        return new ForbiddenException( String.format("%s has no required authority %s", userDescription, authority),
                 cause);
+    }
+
+    public static ForbiddenException deniedBySecurity(Throwable cause) {
+        return new ForbiddenException("Denied by system", cause);
     }
 }

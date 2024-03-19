@@ -28,6 +28,7 @@ public class Constants {
     public static final String serializerLoggerName = "SERIALIZER";
     public static final String deserializerLoggerName = "DESERIALIZER";
     public static final String validatorLoggerName = "VALIDATOR";
+    public static final String securityLoggerName = "SECURITY";
 
     public static final Level defaultCreateLogLvl = Level.INFO;
     public static final Level defaultUpdateLogLvl = Level.INFO;
@@ -35,6 +36,7 @@ public class Constants {
     public static final Level defaultValidationLogLvl = Level.DEBUG;
     public static final Level defaultJsonDeserializationLogLvl = Level.DEBUG;
     public static final Level defaultControllerLogLvl = Level.DEBUG;
+    public static final Level defaultSecurityLogLvl = Level.DEBUG;
 
     public static final int pageSize = 20;
 

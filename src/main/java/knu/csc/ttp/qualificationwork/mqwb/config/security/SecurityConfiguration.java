@@ -1,11 +1,10 @@
-package knu.csc.ttp.qualificationwork.mqwb.config;
+package knu.csc.ttp.qualificationwork.mqwb.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import knu.csc.ttp.qualificationwork.mqwb.config.jwt.JwtFilter;
-import knu.csc.ttp.qualificationwork.mqwb.config.jwt.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,12 +17,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 public class SecurityConfiguration {
-    private final JwtFilter filter;
     private final String[] jwtIgnoreAntMatchers = {"/auth/login", "/auth/signup"};
+    private final JwtFilter jwtFilter;
+    private final AnonymousFilter anonymousFilter;
 
     @Autowired
     public SecurityConfiguration(JwtProvider provider, ObjectMapper objMapper) {
-        this.filter = new JwtFilter(provider, objMapper, jwtIgnoreAntMatchers);
+        this.jwtFilter = new JwtFilter(provider, objMapper, jwtIgnoreAntMatchers);
+        this.anonymousFilter = new AnonymousFilter(HttpMethod.GET);
     }
 
     @Bean
@@ -36,7 +37,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(jwtIgnoreAntMatchers).permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(anonymousFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, AnonymousFilter.class);
         return http.build();
     }
 

@@ -26,8 +26,8 @@ public abstract class AbstractCrudController<ENTITY extends AbstractEntity,
         VALIDATOR extends AbstractEntityValidator<ENTITY>>
         extends AbstractEntityController<ENTITY, SERVICE, VALIDATOR> {
 
-    protected GrantedAuthority getAllAuthority = Role.Authority.READ.getAuthority();
-    protected GrantedAuthority getByIdAuthority = Role.Authority.READ.getAuthority();
+    protected GrantedAuthority getAllAuthority = Role.Authority.ANONYMOUS_READ.getAuthority();
+    protected GrantedAuthority getByIdAuthority = Role.Authority.ANONYMOUS_READ.getAuthority();
     protected GrantedAuthority createAuthority = Role.Authority.CREATE.getAuthority();
     protected GrantedAuthority updateAuthority = Role.Authority.UPDATE.getAuthority();
     protected GrantedAuthority deleteAuthority = Role.Authority.DELETE.getAuthority();

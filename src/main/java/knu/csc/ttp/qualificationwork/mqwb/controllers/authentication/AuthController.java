@@ -3,7 +3,7 @@ package knu.csc.ttp.qualificationwork.mqwb.controllers.authentication;
 import com.fasterxml.jackson.databind.JsonNode;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.controllers.AbstractController;
-import knu.csc.ttp.qualificationwork.mqwb.config.jwt.JwtProvider;
+import knu.csc.ttp.qualificationwork.mqwb.config.security.JwtProvider;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.AuthException;
 import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
 import knu.csc.ttp.qualificationwork.mqwb.entities.user.UserController;

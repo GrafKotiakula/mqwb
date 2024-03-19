@@ -8,8 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public enum Role {
-    ADMIN(Authority.values()), // ADMIN has all authorities
-    USER(Authority.CREATE, Authority.READ, Authority.UPDATE, Authority.DELETE),
+    ADMIN(Authority.values()), // ADMIN has all authorities,
+    ANONYMOUS(Authority.ANONYMOUS_READ),
+    USER(ANONYMOUS, Authority.CREATE, Authority.READ, Authority.UPDATE, Authority.DELETE),
     MODERATOR(USER,
             Authority.CREATE_USER, Authority.UPDATE_USER,
             Authority.MODIFY_COMPANY,
@@ -32,6 +33,8 @@ public enum Role {
     }
 
     public enum Authority {
+        ANONYMOUS_READ,
+
         READ,
         CREATE,
         UPDATE,

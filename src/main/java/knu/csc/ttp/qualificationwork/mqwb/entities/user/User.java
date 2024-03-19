@@ -14,6 +14,7 @@ import javax.validation.constraints.Size;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -147,5 +148,11 @@ public class User extends AbstractEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return  status == Status.ENABLED;
+    }
+
+    @Override
+    public String toString() {
+        String identifier = Optional.ofNullable(id).map(UUID::toString).orElse("anonymous");
+        return String.format("%s[id=%s]", getClass().getSimpleName(), identifier);
     }
 }

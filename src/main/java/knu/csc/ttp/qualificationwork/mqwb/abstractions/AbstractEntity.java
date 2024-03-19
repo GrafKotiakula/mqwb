@@ -11,7 +11,7 @@ public class AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, columnDefinition = "uuid")
-    private UUID id;
+    protected UUID id;
 
     @JsonProperty
     public UUID getId() {

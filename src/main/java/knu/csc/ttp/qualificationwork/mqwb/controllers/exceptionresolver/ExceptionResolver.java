@@ -88,6 +88,12 @@ public class ExceptionResolver extends AbstractController {
         return new FailureDto(ex);
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public FailureDto forbiddenException(ForbiddenException ex){
+        return new FailureDto(ex);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public FailureDto notFoundExceptionHandler(NotFoundException ex){

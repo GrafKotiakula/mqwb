@@ -9,6 +9,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class InternalServerErrorException extends RequestException {
     protected InternalServerErrorException(String message, Throwable cause) {
@@ -38,9 +39,13 @@ public class InternalServerErrorException extends RequestException {
     }
 
     public static InternalServerErrorException cannotAccessExecutable(Executable executable, Throwable cause) {
-        return new InternalServerErrorException(String.format("Cannot access executable %s.%s%s",
-                executable.getDeclaringClass().getSimpleName(), executable.getName(),
-                Arrays.stream(executable.getParameterTypes()).map(Class::getSimpleName).toList()), cause);
+        return new InternalServerErrorException(
+                String.format( "Cannot access executable %s.%s(%s)",
+                        executable.getDeclaringClass().getSimpleName(),
+                        executable.getName(),
+                        Arrays.stream(executable.getParameterTypes()).map(Class::getSimpleName)
+                                .collect(Collectors.joining(", ")) ),
+                cause);
     }
 
     public static InternalServerErrorException repositoryNotFound(Class<? extends AbstractEntity> entity) {

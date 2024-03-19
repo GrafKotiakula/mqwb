@@ -1,8 +1,7 @@
-package knu.csc.ttp.qualificationwork.mqwb.config;
+package knu.csc.ttp.qualificationwork.mqwb.config.jackson;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import knu.csc.ttp.qualificationwork.mqwb.config.jackson.PageSerializer;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.jackson.JsonComponentModule;
 import org.springframework.context.ApplicationContext;

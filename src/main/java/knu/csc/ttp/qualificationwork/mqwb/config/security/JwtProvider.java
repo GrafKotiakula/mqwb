@@ -1,22 +1,19 @@
-package knu.csc.ttp.qualificationwork.mqwb.config.jwt;
+package knu.csc.ttp.qualificationwork.mqwb.config.security;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.WeakKeyException;
-import jakarta.servlet.http.HttpServletRequest;
+import knu.csc.ttp.qualificationwork.mqwb.Constants;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
-import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
 import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
 import knu.csc.ttp.qualificationwork.mqwb.entities.user.jpa.UserService;
-import org.apache.logging.log4j.LogManager;
+import knu.csc.ttp.qualificationwork.mqwb.exceptions.server.InternalServerErrorException;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -29,7 +26,8 @@ import java.util.UUID;
 public class JwtProvider  {
     public static final String BEARER_TOKEN_PREFIX = "Bearer ";
 
-    protected final Logger logger = LogManager.getLogger(getClass());
+    protected final Logger logger = LoggerUtils.getNamedLogger(Constants.securityLoggerName, getClass());
+    protected Level defaultLogLevel = Constants.defaultControllerLogLvl;
     private final SecretKey secretKey;
     private final Long tokenExpirationMillis;
     private final UserService service;
@@ -87,10 +85,16 @@ public class JwtProvider  {
         }
     }
 
-    public Authentication getAuthentication(HttpServletRequest request) throws JwtException{
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        UUID id = extractId(bearerToken);
-        User user = service.findByIdOrThrow(id);
-        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+    public User getUser(String token) throws JwtException{
+        UUID id = extractId(token);
+        return service.findByIdOrThrow(id);
+    }
+
+    public Level getDefaultLogLevel() {
+        return defaultLogLevel;
+    }
+
+    public void setDefaultLogLevel(Level defaultLogLevel) {
+        this.defaultLogLevel = defaultLogLevel;
     }
 }
