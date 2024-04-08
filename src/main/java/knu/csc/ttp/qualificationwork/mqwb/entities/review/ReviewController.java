@@ -4,19 +4,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import knu.csc.ttp.qualificationwork.mqwb.AuthUtils;
 import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.controllers.AbstractCrudController;
+import knu.csc.ttp.qualificationwork.mqwb.entities.game.Game;
+import knu.csc.ttp.qualificationwork.mqwb.entities.game.jpa.GameService;
 import knu.csc.ttp.qualificationwork.mqwb.entities.review.jpa.ReviewService;
 import knu.csc.ttp.qualificationwork.mqwb.entities.user.Role;
 import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.jpa.UserService;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.ForbiddenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -24,9 +26,20 @@ import java.util.UUID;
 @RequestMapping("/data/review")
 public class ReviewController extends AbstractCrudController<Review, ReviewService, ReviewValidator> {
 
+    protected GameService gameService;
+    protected UserService userService;
+
+    protected GrantedAuthority findAllByGameAuthority = Role.Authority.ANONYMOUS_READ.getAuthority();
+    protected GrantedAuthority findByGameAndUserAuthority = Role.Authority.ANONYMOUS_READ.getAuthority();
+    protected GrantedAuthority findByGameMyAuthority = Role.Authority.READ.getAuthority();
+
     @Autowired
     public ReviewController(ApplicationContext context) {
         super(context);
+
+        gameService = context.getBean(GameService.class);
+        userService = context.getBean(UserService.class);
+
         updateAuthority = Role.Authority.UPDATE_REVIEW.getAuthority();
         deleteAuthority = Role.Authority.DELETE_REVIEW.getAuthority();
     }
@@ -46,9 +59,32 @@ public class ReviewController extends AbstractCrudController<Review, ReviewServi
                         .noRequiredAuthority(SecurityContextHolder.getContext().getAuthentication(), authority)) );
     }
 
+    @GetMapping("/game/{id}/all")
+    public Page<Review> findAllReviewsByGame(@PathVariable("id") String strId,
+                                             @RequestParam(value = "page", defaultValue = "0") Integer page) {
+        checkAuthority(findAllByGameAuthority);
+        Game game = gameService.findByIdOrThrow(convertToUUID(strId, "gameId"));
+        return service.getAllByGame(game, page);
+    }
+
+    @GetMapping("/game/{id}/my")
+    public Review findReviewByGameAndAuth(@AuthenticationPrincipal User user, @PathVariable("id") String strId) {
+        checkAuthority(findByGameMyAuthority);
+        Game game = gameService.findByIdOrThrow(convertToUUID(strId, "gameId"));
+        return service.findByGameAndUserOrThrow(game, user);
+    }
+
+    @GetMapping("/game/{gameId}/user/{userId}")
+    public Review findReviewByGameAndUser(@PathVariable("gameId") String strGameId, @PathVariable("userId") String strUserId) {
+        checkAuthority(findByGameAndUserAuthority);
+        Game game = gameService.findByIdOrThrow(convertToUUID(strGameId, "gameId"));
+        User user = userService.findByIdOrThrow(convertToUUID(strUserId, "userId"));
+        return service.findByGameAndUserOrThrow(game, user);
+    }
+
     @Override
     @PutMapping("/{id}")
-    public Review updateById(String strId, JsonNode json) {
+    public Review updateById(@PathVariable("id") String strId, JsonNode json) {
         UUID id = convertToUUID(strId, "id");
 
         Review review = service.findByIdOrThrow(id);

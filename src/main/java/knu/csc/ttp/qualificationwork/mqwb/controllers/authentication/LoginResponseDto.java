@@ -1,22 +1,22 @@
 package knu.csc.ttp.qualificationwork.mqwb.controllers.authentication;
 
-import java.util.UUID;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
 
 public class LoginResponseDto {
-    private UUID id;
+    private User user;
     private String token;
 
-    public LoginResponseDto(UUID id, String token) {
-        this.id = id;
+    public LoginResponseDto(User user, String token) {
+        this.user = user;
         this.token = token;
     }
 
-    public UUID getId() {
-        return id;
+    public User getUser() {
+        return user;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getToken() {

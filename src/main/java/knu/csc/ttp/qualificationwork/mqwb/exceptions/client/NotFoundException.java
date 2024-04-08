@@ -3,6 +3,9 @@ package knu.csc.ttp.qualificationwork.mqwb.exceptions.client;
 import jakarta.servlet.http.HttpServletRequest;
 import knu.csc.ttp.qualificationwork.mqwb.Constants;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.AbstractEntity;
+import knu.csc.ttp.qualificationwork.mqwb.entities.game.Game;
+import knu.csc.ttp.qualificationwork.mqwb.entities.review.Review;
+import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
 import knu.csc.ttp.qualificationwork.mqwb.exceptions.RequestException;
 
 import java.util.UUID;
@@ -37,6 +40,16 @@ public class NotFoundException extends RequestException {
     public static NotFoundException idNotFound(Class<? extends AbstractEntity> entity, UUID id, Throwable cause) {
         return new NotFoundException(1, String.format("%s with id %s not found", entity.getSimpleName(), id),
                 String.format("%s[id=%s] not found", entity.getSimpleName(), id), cause);
+    }
+
+    public static NotFoundException reviewNotFoundByGameAndUser(Game game, User user) {
+        return reviewNotFoundByGameAndUser(game, user, null);
+    }
+
+    public static NotFoundException reviewNotFoundByGameAndUser(Game game, User user, Throwable cause) {
+        return new NotFoundException(2,
+                String.format("%s for %s by %s not found", Review.class.getSimpleName(), game, user),
+                cause);
     }
 }
 

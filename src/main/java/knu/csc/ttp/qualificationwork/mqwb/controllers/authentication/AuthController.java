@@ -37,7 +37,7 @@ public class AuthController extends AbstractController {
     protected LoginResponseDto buildLoginResponseDto(User user) {
         String jwtToken = provider.createToken(user.getId());
         logger.log(defaultLogLvl,"{} is authenticated successfully", user);
-        return new LoginResponseDto(user.getId(), jwtToken);
+        return new LoginResponseDto(user, jwtToken);
     }
 
     @PostMapping("/login")

@@ -43,7 +43,7 @@ public abstract class AbstractEntityDeserializer<E extends AbstractEntity> exten
                         (node, name) -> node.intValue()),
                 new JsonValueExtractor<>(Boolean.class,"bool","bool",JsonNode::isBoolean,
                         (node, name) -> node.booleanValue()),
-                new JsonValueExtractor<>(BigDecimal.class,"decimal","decimal",JsonNode::isDouble,
+                new JsonValueExtractor<>(BigDecimal.class,"decimal","decimal", JsonNode::isNumber,
                         (node, name) -> node.decimalValue()),
                 new JsonValueExtractor<>(ZonedDateTime.class,"timestamp",String.format("string[%s]",
                         Constants.dateTimeFormat), JsonNode::isTextual, AbstractEntityDeserializer::extractZonedDateTime),

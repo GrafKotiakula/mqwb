@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -44,7 +45,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        return ignoreMatchers.stream().anyMatch(matcher -> matcher.matches(request));
+        return request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.toString())
+                || ignoreMatchers.stream().anyMatch(matcher -> matcher.matches(request));
     }
 
     protected void authenticationFailed(AuthException exception, HttpServletResponse response) throws IOException{
