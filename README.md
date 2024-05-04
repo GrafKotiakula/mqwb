@@ -1,8 +1,8 @@
 ### Taras Shevchenko National University of Kyiv <br /> Faculty of Computer Science and Cybernetics <br /> Department of Theory and Technology of Programming
 
-# Game Ratings MQWF
+# Game Ratings MQWB
 
-This project is client part of the web application.
+This project is server part of the web application.
 It has been developed as part of a master's qualification work
 "Web&nbsp;application&nbsp;for&nbsp;video&nbsp;game&nbsp;rating&nbsp;and&nbsp;reviewing"
 (ukr.&nbsp;"Вебзастосунок&nbsp;для&nbsp;оцінювання&nbsp;та&nbsp;рецензування&nbsp;відеоігор")
