@@ -25,7 +25,7 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Column(name = "password", length = 100, nullable = false)
     @ValidationGroup(exclude = UserValidator.UPDATE)
-    @Size(min = 5) @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$", message = "wrongPasswordFormat")
+    @Size(min = 5, max = 50 ) @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$", message = "wrongPasswordFormat")
     private String password;
 
     @Enumerated(EnumType.STRING)

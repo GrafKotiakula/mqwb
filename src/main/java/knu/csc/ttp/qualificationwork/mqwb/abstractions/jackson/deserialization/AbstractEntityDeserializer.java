@@ -100,13 +100,27 @@ public abstract class AbstractEntityDeserializer<E extends AbstractEntity> exten
                 .orElse(null) );
     }
 
-    @SuppressWarnings("unchecked")
+    private <T extends Enum<T>> JsonValueExtractor<T> createEnumExtractor(Class<T> enumClazz) {
+        return new JsonValueExtractor<>(enumClazz, enumClazz.getSimpleName(),
+                String.format("string[ENUM.%s]", enumClazz.getSimpleName()), JsonNode::isTextual,
+                (node, name) -> Arrays.stream(enumClazz.getEnumConstants())
+                        .filter(v -> v.name().equals(node.textValue()))
+                        .findFirst()
+                        .orElseThrow( () -> LoggerUtils.logException(logger, defaultLogLvl,
+                                BadRequestException.wrongEnumConstant(name, node.textValue(), enumClazz)) ));
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected <T> JsonValueExtractor<T> findBasicExtractorForType(Class<T> type) {
         JsonValueExtractor<T> extractor = (JsonValueExtractor<T>) extractors.get(type);
         if (extractor != null) {
             return extractor;
         } else if (AbstractEntity.class.isAssignableFrom(type)){
             extractor = (JsonValueExtractor<T>) createEntityExtractorById( (Class<? extends AbstractEntity>) type );
+            extractors.put(type, extractor);
+            return extractor;
+        } else if(type.isEnum()) {
+            extractor = (JsonValueExtractor<T>) createEnumExtractor( (Class<Enum>) type );
             extractors.put(type, extractor);
             return extractor;
         } else {
@@ -145,11 +159,8 @@ public abstract class AbstractEntityDeserializer<E extends AbstractEntity> exten
                 .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T getProperty(JsonNode node, String propertyName, Class<T> propertyClazz) {
-        JsonValueExtractor<T> extractor = (JsonValueExtractor<T>) Optional.ofNullable(extractors.get(propertyClazz))
-                .orElseThrow( () -> LoggerUtils.errorException(staticLogger,
-                        InternalServerErrorException.noExtractorFound(propertyClazz)) );
+    public <T> T getProperty(JsonNode node, String propertyName, Class<T> propertyClazz) {
+        JsonValueExtractor<T> extractor = findBasicExtractorForType(propertyClazz);
         return extractor.extractProperty(node, propertyName);
     }
 

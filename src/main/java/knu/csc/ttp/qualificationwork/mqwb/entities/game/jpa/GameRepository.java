@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface GameRepository extends JpaRepository<Game, UUID> {
-    Page<Game> findAllByNameContains(String name, Pageable pageable);
+    Page<Game> findAllByNameContainsIgnoreCase(String name, Pageable pageable);
     Optional<Game> findByName(String name);
 
     Long countByDeveloper(Company company);

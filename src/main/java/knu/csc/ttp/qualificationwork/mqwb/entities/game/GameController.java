@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/data/game")
 public class GameController extends AbstractCrudController<Game, GameService, GameValidator> {
     protected ImageController imageController;
-    protected GrantedAuthority findByNameAuthority = Role.Authority.READ.getAuthority();
+    protected GrantedAuthority findByNameAuthority = Role.Authority.ANONYMOUS_READ.getAuthority();
 
     @Autowired
     public GameController(ApplicationContext context) {

@@ -9,6 +9,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
-    Page<Company> findAllByNameContains(String name, Pageable pageable);
+    Page<Company> findAllByNameContainsIgnoreCase(String name, Pageable pageable);
     Optional<Company> findByName(String name);
 }

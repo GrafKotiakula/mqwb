@@ -1,10 +1,8 @@
 package knu.csc.ttp.qualificationwork.mqwb.controllers.authentication;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import knu.csc.ttp.qualificationwork.mqwb.LoggerUtils;
 import knu.csc.ttp.qualificationwork.mqwb.abstractions.controllers.AbstractController;
 import knu.csc.ttp.qualificationwork.mqwb.config.security.JwtProvider;
-import knu.csc.ttp.qualificationwork.mqwb.exceptions.client.AuthException;
 import knu.csc.ttp.qualificationwork.mqwb.entities.user.User;
 import knu.csc.ttp.qualificationwork.mqwb.entities.user.UserController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,18 +39,14 @@ public class AuthController extends AbstractController {
 
     @PostMapping("/login")
     public LoginResponseDto login(@RequestBody LoginRequestDto request){
-        try {
-            if(request.getUsername() == null || request.getPassword() == null){
-                throw new BadCredentialsException("username or password is null");
-            }
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
-            User user = (User) authManager.authenticate(authToken).getPrincipal();
-
-            return buildLoginResponseDto(user);
-        } catch (AuthenticationException ex) {
-            throw LoggerUtils.debugException(logger, AuthException.wrongUsernameOrPassword(ex));
+        if(request.getUsername() == null || request.getPassword() == null){
+            throw new BadCredentialsException("username or password is null");
         }
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+        User user = (User) authManager.authenticate(authToken).getPrincipal();
+
+        return buildLoginResponseDto(user);
     }
 
     @PostMapping("/signup")

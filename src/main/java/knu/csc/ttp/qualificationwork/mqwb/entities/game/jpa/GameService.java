@@ -34,7 +34,7 @@ public class GameService extends AbstractService<Game, GameRepository> {
     public Page<Game> findAllByNameContains(String name, int page) {
         Pageable pageable = pageableOf(page);
         return Optional.ofNullable(name)
-                .map(n -> repository.findAllByNameContains(n, pageable) )
+                .map(n -> repository.findAllByNameContainsIgnoreCase(n, pageable) )
                 .orElse(Page.empty(pageable));
     }
 

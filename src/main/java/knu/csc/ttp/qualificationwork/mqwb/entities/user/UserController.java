@@ -17,15 +17,19 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/data/user")
 public class UserController extends AbstractCrudController<User, UserService, UserValidator> {
+    protected UserDeserializer deserializer;
     protected ImageController imageController;
 
     protected GrantedAuthority readByAuthAuthority = Role.Authority.READ.getAuthority();
     protected GrantedAuthority updateByIdAuthority = Role.Authority.UPDATE_USER.getAuthority();
-    protected GrantedAuthority updatePasswordByIdAuthority = Role.Authority.UPDATE_USER_PASSWORD.getAuthority();
+    protected GrantedAuthority updatePasswordByIdAuthority = Role.Authority.UPDATE_USER.getAuthority();
+    protected GrantedAuthority updateRoleByIdAuthority = Role.Authority.UPDATE_USER_ROLE.getAuthority();
+    protected GrantedAuthority blockUserAuthority = Role.Authority.BLOCK_USER.getAuthority();
 
     @Autowired
     public UserController(ApplicationContext context) {
         super(context);
+        deserializer = context.getBean(UserDeserializer.class);
         imageController = context.getBean(ImageController.class);
         createAuthority = Role.Authority.CREATE_USER.getAuthority();
         deleteAuthority = Role.Authority.DELETE_USER.getAuthority();
@@ -34,7 +38,7 @@ public class UserController extends AbstractCrudController<User, UserService, Us
     @Override
     public User parseEntityOnCreate(JsonNode json) {
         User user = super.parseEntityOnCreate(json);
-        user.setPassword(UserDeserializer.getPassword(json));
+        user.setPassword(deserializer.getPassword(json));
         return user;
     }
 
@@ -45,7 +49,7 @@ public class UserController extends AbstractCrudController<User, UserService, Us
     }
 
     private User updatePassword(User user, JsonNode json) {
-        user.setPassword(UserDeserializer.getPassword(json));
+        user.setPassword(deserializer.getPassword(json));
         validator.validate(user, UserValidator.PASSWORD_UPDATE);
         return service.updatePassword(user);
     }
@@ -89,8 +93,6 @@ public class UserController extends AbstractCrudController<User, UserService, Us
         return update(user, json);
     }
 
-    // TODO add endpoints for user blocking and role granting
-
     @PutMapping("/password")
     public User updatePasswordByAuth(@AuthenticationPrincipal User user, @RequestBody JsonNode json) {
         checkAuthority(updateAuthority); // in case anonymous user
@@ -117,6 +119,36 @@ public class UserController extends AbstractCrudController<User, UserService, Us
         User user = service.findByIdOrThrow(convertToUUID(strId, "id"));
 
         return updateImage(user, file, "image");
+    }
+
+    @PutMapping("/{id}/role")
+    public User updateRoleById(@PathVariable("id") String strId, @RequestBody JsonNode node) {
+        checkAuthority(updateRoleByIdAuthority);
+
+        User user = service.findByIdOrThrow(convertToUUID(strId, "id"));
+        user.setRole(deserializer.getRole(node));
+
+        return service.update(user);
+    }
+
+    @PutMapping("/{id}/block")
+    public User blockById(@PathVariable("id") String strId) {
+        checkAuthority(blockUserAuthority);
+
+        User user = service.findByIdOrThrow(convertToUUID(strId, "id"));
+        user.setStatus(Status.DISABLED);
+
+        return service.update(user);
+    }
+
+    @PutMapping("/{id}/unblock")
+    public User unblockById(@PathVariable("id") String strId) {
+        checkAuthority(blockUserAuthority);
+
+        User user = service.findByIdOrThrow(convertToUUID(strId, "id"));
+        user.setStatus(Status.ENABLED);
+
+        return service.update(user);
     }
 
     @DeleteMapping("/image")

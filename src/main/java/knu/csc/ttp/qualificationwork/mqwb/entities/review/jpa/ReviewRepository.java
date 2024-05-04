@@ -12,5 +12,6 @@ import java.util.UUID;
 
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
     Page<Review> getAllByGame(Game game, Pageable pageable);
+    Page<Review> getAllByUser(User user, Pageable pageable);
     Optional<Review> getByGameAndUser(Game game, User user);
 }

@@ -12,7 +12,7 @@ public enum Role {
     ANONYMOUS(Authority.ANONYMOUS_READ),
     USER(ANONYMOUS, Authority.CREATE, Authority.READ, Authority.UPDATE, Authority.DELETE),
     MODERATOR(USER,
-            Authority.CREATE_USER, Authority.UPDATE_USER,
+            Authority.CREATE_USER, Authority.BLOCK_USER,
             Authority.MODIFY_COMPANY,
             Authority.MODIFY_GAME,
             Authority.DELETE_REVIEW);
@@ -42,7 +42,8 @@ public enum Role {
 
         CREATE_USER,
         UPDATE_USER,
-        UPDATE_USER_PASSWORD,
+        UPDATE_USER_ROLE,
+        BLOCK_USER,
         DELETE_USER,
 
         MODIFY_COMPANY,

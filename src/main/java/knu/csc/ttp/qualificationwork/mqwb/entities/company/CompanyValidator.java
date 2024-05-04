@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CompanyValidator extends AbstractEntityValidator<Company> {
+    public static final String NO_NAME_UNIQUENESS_CHECK = "no name uniqueness";
     protected static final String NAME_FIELD_NAME = "name";
 
     private final CompanyService service;

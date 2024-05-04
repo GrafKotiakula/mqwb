@@ -37,6 +37,6 @@ public class AbstractEntity {
 
     @Override
     public String toString() {
-        return String.format("%s[id=%s]", getClass().getSimpleName(), id.toString());
+        return String.format("%s[id=%s]", getClass().getSimpleName(), id);
     }
 }

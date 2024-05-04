@@ -14,6 +14,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.AccountStatusException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,6 +74,32 @@ public class ExceptionResolver extends AbstractController {
     public FailureDto sqlException(SQLException ex) {
         RequestException requestException = InternalServerErrorException.sqlException(ex);
         LoggerUtils.errorException(logger, requestException);
+        return new FailureDto(requestException);
+    }
+
+
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public FailureDto badCredentialsException(BadCredentialsException ex) {
+        RequestException requestException = AuthException.wrongUsernameOrPassword(ex);
+        LoggerUtils.logException(logger, defaultLogLvl, requestException);
+        return new FailureDto(requestException);
+    }
+
+    @ExceptionHandler(AccountStatusException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public FailureDto accountNotEnabledException(AccountStatusException ex) {
+        RequestException requestException = AuthException.accountNotEnabled(ex);
+        LoggerUtils.logException(logger, defaultLogLvl, requestException);
+        return new FailureDto(requestException);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public FailureDto unknownAuthException(AuthenticationException ex) {
+        RequestException requestException = AuthException.unknownError(ex);
+        LoggerUtils.logException(logger, defaultLogLvl, requestException);
         return new FailureDto(requestException);
     }
 

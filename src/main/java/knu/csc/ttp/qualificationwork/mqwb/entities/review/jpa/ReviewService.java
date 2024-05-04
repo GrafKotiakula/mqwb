@@ -28,6 +28,10 @@ public class ReviewService extends AbstractService<Review, ReviewRepository> {
         return repository.getAllByGame(game, pageableOf(page));
     }
 
+    public Page<Review> getAllByUser(User user, int page) {
+        return repository.getAllByUser(user, pageableOf(page));
+    }
+
     public Review findByGameAndUserOrThrow(Game game, User user) {
         return repository.getByGameAndUser(game, user)
                 .orElseThrow( () -> LoggerUtils.debugException(logger,
@@ -48,9 +52,9 @@ public class ReviewService extends AbstractService<Review, ReviewRepository> {
     }
 
     @Override
-    public Review update(Review review) {
+    public Review update(Review review, Level logLevel) {
         review.setRating( ratingService.update(review.getRating(), Level.TRACE) );
-        review = super.update(review);
+        review = super.update(review, logLevel);
 
         ratingService.updateGameAvgs(review.getGame(), Level.TRACE);
 

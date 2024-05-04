@@ -40,4 +40,16 @@ public class AuthException  extends RequestException {
     public static AuthException wrongUsernameOrPassword(Throwable cause){
         return new AuthException(2, "Wrong username or password", cause);
     }
+
+    public static AuthException accountNotEnabled() {
+        return accountNotEnabled(null);
+    }
+
+    public static AuthException accountNotEnabled(Throwable cause) {
+        return new AuthException(3, "Account is not enabled", cause);
+    }
+
+    public static AuthException unknownError(Throwable cause) {
+        return new AuthException(99, "Unknown authentication error", cause);
+    }
 }

@@ -19,7 +19,7 @@ public class CompanyService extends AbstractService<Company, CompanyRepository> 
     public Page<Company> findAllByNameContains(String name, int page) {
         Pageable pageable = pageableOf(page);
         return Optional.ofNullable(name)
-                .map(n -> repository.findAllByNameContains(n, pageable) )
+                .map(n -> repository.findAllByNameContainsIgnoreCase(n, pageable) )
                 .orElse(Page.empty(pageable));
     }
 

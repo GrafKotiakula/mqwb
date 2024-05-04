@@ -54,6 +54,14 @@ public class BadRequestException extends RequestException {
                 String.format("wrong %s format", fieldName), cause);
     }
 
+    public static BadRequestException wrongEnumConstant(String fieldName, String constant,
+                                                        Class<? extends Enum<?>> enumClazz) {
+        return new BadRequestException(4,
+                String.format("%s value is unknown enum constant", fieldName),
+                String.format("Unknown enum constant %s.%s", enumClazz.getSimpleName(), constant),
+                null);
+    }
+
     public static BadRequestException unknownError() {
         return unknownError("Unknown error", null);
     }

@@ -74,7 +74,15 @@ public class ReviewController extends AbstractCrudController<Review, ReviewServi
         return service.findByGameAndUserOrThrow(game, user);
     }
 
-    @GetMapping("/game/{gameId}/user/{userId}")
+    @GetMapping("/user/{id}/all")
+    public Page<Review> findAllReviewsByUser(@PathVariable("id") String strId,
+                                             @RequestParam(value = "page", defaultValue = "0") Integer page) {
+        checkAuthority(findAllByGameAuthority);
+        User user = userService.findByIdOrThrow(convertToUUID(strId, "gameId"));
+        return service.getAllByUser(user, page);
+    }
+
+    @GetMapping("/game/{gameId}/{userId}")
     public Review findReviewByGameAndUser(@PathVariable("gameId") String strGameId, @PathVariable("userId") String strUserId) {
         checkAuthority(findByGameAndUserAuthority);
         Game game = gameService.findByIdOrThrow(convertToUUID(strGameId, "gameId"));
